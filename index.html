@@ -6,43 +6,84 @@
     <title>Document</title>
   </head>
 
+  <!-- 当在页面中直接写fullname时 fullname不会去收集渲染watcher ， 因为fullname没有dep 没有收集的功能 -->
+  <!-- firstName 是在计算属性中使用的 ，所以他会收集计算属性watcher。 没有收集渲染watcher -->
+
+  <!-- 计算属性中的值应该记录 计算属性watcher 和渲染watcher -->
+
+  <!-- Dep.target上赋值一个渲染watcher ， 又将Dep.target设置为计算属性watcher-->
+
   <body>
-    <!-- 'hello' + arr + 'world' -->
-    <div id="app">{{obj}}</div>
+    <div id="app">{{name}}</div>
+    <!-- <script src="node_modules/vue/dist/vue.js"></script> -->
     <script src="dist/vue.js"></script>
     <script>
-      let vm = new Vue({
-        data() {
-          //this = vm
-          return {
-            // name: 'zf',
-            // age: 11,
-            obj: { a: { a: 1 } }, // 最外层的数组进行了依赖收集  JSON.stringify()
-            arr: [[]],
-          };
+      const vm = new Vue({
+        // watcher 渲染watcher
+        el: "#app",
+        data: {
+          name: "zf",
+        //   age: 100,
+        //   firstName: "zhu",
+        //   lastName: "feng",
         },
-      });
-      vm.$mount("#app");
+        // computed: {
+        //   // Object.defineProperty => getter
+        //   fullName: {
+        //     get() {
+        //       console.log("oooo");
+        //       return this.firstName + this.lastName;
+        //     },
+        //     set(newValue) {
+        //       console.log(newValue);
+        //     },
+        //   },
+        // },
+        watch: {
+          // 用户watcher
+          name(newVal, oldVal) {
+              console.log(newVal, oldVal)
+          },
+          // name: [
+          //     function(newVal, oldVal) {
+          //         console.log(newVal, oldVal)
+          //     },
+          //     function(a, b) {
+          //         console.log(a, b)
+          //     }
+          // ],
+          // 'age.n'(newVal, oldVal) {
+          //     console.log(newVal, oldVal)
+          // },
+        },
+      }); 
 
-      // 数据变化需要影响视图 , 数据和页面渲染关联起来
-      // setTimeout(() => {
-      //     vm.name = 'hello';
-      //     vm.name = 'zf';
-      //     vm.name = 'hello';
-      //     vm.name = 123;
-
-      //     vm.$nextTick(()=>{
-      //         console.log(vm.$el)
-      //     })
-      //     // vm._update(vm._render()); // 重新调用render方法产生虚拟dom， 目前还没有diff
-      // }, 1000);
+    //   console.log(vm.fullName);
+    //   console.log(vm.fullName);
       setTimeout(() => {
-        vm.obj.a.a = 100;
+        vm.name = "zs";
+
+        // console.log(vm.fullName);
       }, 1000);
+
+      // 计算属性默认不执行 =》 Object.defineProperty => getter
+      // 多次取值如果依赖的值不变化 就不会重新执行  vm.fullname vm.fullname
+      // 依赖的值变化 需要重新执行 vm.firstame = 'zhang'  fullname zhangfeng
+
+      // dirty 表示这个值是不是脏的 true （取值后值变为false）， 依赖的值变化了 dirty=>true
+
+      // vm.$watch('name', function(newVal) {
+      //     console.log(newVal)
+      // })
+      // setTimeout(() => {
+      //     vm.name = 'zs'
+      // }, 1000);
+
+      // fullname => 计算属性watcher
+      // 计算属性watcher 收集了两个dep (firstName,lastName)
+
+      // 根据计算属性watcher找到这两个dep，让dep收集渲染watcher
+      // (firstName,lastName) 收集的渲染watcher
     </script>
   </body>
 </html>
-
-<!-- Vue中嵌套层次不能太深 ，否则会有大量递归 -->
-<!-- Vue中对象通过的是defineProprety实现的响应式，拦截了get和set 。 如果不存在的属性不会拦截，也不会响应。 可以使用$set = 让对象自己去notify , 或者赋予一个新对象 -->
-<!-- Vue中的数组改索引和长度 是不会影响更新的. 通过变异方法可以更新视图 7个方法， 数组中如果是对象类型，修改对象也可以更新视图 -->
