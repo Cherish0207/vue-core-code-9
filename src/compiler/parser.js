@@ -11,6 +11,7 @@ const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; // {{aaaaa}}
 
 // html字符串解析成 对应的脚本来触发 tokens  <div id="app"> {{name}}</div>
 // 将解析后的结果 组装成一个树结构  栈
+export function parserHTML(html) {
 function createAstElement(tagName, attrs) {
   return {
     tag: tagName,
@@ -50,8 +51,6 @@ function chars(text) {
     });
   }
 }
-
-export function parserHTML(html) {
   function advance(len) {
     html = html.substring(len);
   }

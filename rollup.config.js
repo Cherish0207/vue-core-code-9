@@ -12,14 +12,6 @@ export default {
       // 使用babel进行转化 但是拍出node_modules 文件
       exclude: "node_modules/**", // glob 语法
     }),
-    process.env.ENV === "development"
-      ? serve({
-          open: true,
-          openPage: "/index.html",
-          port: 3001,
-          contentBase: "",
-        })
-      : null,
   ],
 };
 

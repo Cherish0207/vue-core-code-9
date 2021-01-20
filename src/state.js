@@ -5,11 +5,10 @@ import { isFunction } from "./utils";
 
 export function stateMixin(Vue) {
   Vue.prototype.$watch = function (key, handler, options = {}) {
+    options.user = true; // 是一个用户自己写的watcher
+
     // vm,name,用户回调，options.user
-    new Watcher(this, key, handler, {
-      ...options,
-      user: true /** 是一个用户自己写的watcher */,
-    });
+    new Watcher(this, key, handler, options);
   };
 }
 export function initState(vm) {
@@ -37,6 +36,7 @@ function proxy(vm, source, key) {
     },
   });
 }
+
 function initData(vm) {
   //
   let data = vm.$options.data; // vm.$el  vue 内部会对属性检测如果是以$开头 不会进行代理
